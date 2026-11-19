@@ -92,7 +92,7 @@ main{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .stat b{font-size:24px}
 }
 @media(max-width:380px){.grid{grid-template-columns:minmax(0,1fr)}}
-</style><script src="config.js"></script>
+</style><style>.mg{display:grid;grid-template-columns:230px 1fr;gap:14px;align-items:start}@media(max-width:700px){.mg{grid-template-columns:1fr}}</style><script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head><body>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div>
@@ -134,7 +134,7 @@ function lg(e,id){const s=S.students.find(x=>x.id==(id||1));s.last=0;S.log.unshi
 function setRole(r){if(S.stu){lg('Çıkış',S.stu);S.stu=null}S.role=r;S.view=r=='koc'?'ana':r=='ogr'?'grup':'veli';if(r=='veli')S.sid=1;render()}
 function go(v,id){S.view=v;if(id)S.sid=id;render()}
 function newStu(){var n=prompt('Öğrenci adı soyadı');if(!n)return;var tk=(prompt('Panel türü yazın: YKS, LGS veya ORTAOKUL','YKS')||'YKS').toUpperCase(),lg2=tk=='LGS',og=tk.indexOf('ORTA')==0;var rz=confirm('KVKK aydınlatma metni öğrenciye/veliye sunuldu ve açık rıza alındı mı?');S.students.push({riza:rz,id:Date.now(),name:n,track:og?'ORT':lg2?'LGS':'YKS',alan:og?'6. sınıf':lg2?'8. sınıf':'Sayısal',goal:'Hedef belirlenmedi',hedef:{tyt:100,ayt:60},tyt:[],ayt:[],week:[0,0,0,0,0,0,0],soru:{goal:500,done:0},abs:0,last:0,pkg:'2027-01-01',pay:{due:'2026-12-01',amt:10000,paid:false},note:'',tasks:[],topics:[]});save();render()}
-function nav(){var k=[['ana','Ana ekran'],['ogrenciler','Öğrenciler'],['yks','YKS paneli'],['lgs','LGS paneli'],['ort','Ortaokul paneli'],['rapor','Rapor'],['deneme','Deneme analizi'],['yazili','Yazılı notları'],['hesap','Giriş bilgileri'],['devam','Devam takibi'],['randevu','Randevular'],['bil','Bildirimler ('+S.notifs.length+')']],o=[['gorev','Görevlerim'],['konu','Konu takibi'],['deneme','Denemeler'],['pomo','Pomodoro']],items=(S.role=='koc'?k:S.role=='ogr'?(S.stu?(cur()&&cur().track=='LGS'?o.concat([['yazili','Yazılı notları']]):o):[['grup','Grubunu seç']]):S.role=='ort'?[['ort','Panelim'],['deneme','Denemeler'],['yazili','Yazılı notları'],['pomo','Pomodoro']]:[['veli','Aylık rapor'],['deneme','Deneme analizi']].concat(cur()&&(cur().track=='ORT'||cur().track=='LGS')?[['yazili','Yazılı notları']]:[])).concat([['mufredat','Müfredat']]).concat(S.role=='ogr'||S.role=='ort'?[]:[['bilgi','Koçluk ve paketler']]).concat([['sozlesme','Hizmet sözleşmesi'],['kvkk','KVKK ve gizlilik'],['kural','Kurallar']]);if(S.stu&&S.role!='koc'&&cur()&&!accOk(cur(),S.role))items=[['kural','Kurallar']];
+function nav(){var k=[['ana','Ana ekran'],['ogrenciler','Öğrenciler'],['yks','YKS paneli'],['lgs','LGS paneli'],['ort','Ortaokul paneli'],['rapor','Rapor'],['deneme','Deneme analizi'],['yazili','Yazılı notları'],['hesap','Giriş bilgileri'],['devam','Devam takibi'],['randevu','Randevular']].concat(CLOUD?[['mesaj','Mesajlar'+(mUnTot()?' ('+mUnTot()+')':'')]]:[]).concat([['bil','Bildirimler ('+S.notifs.length+')']]),o=[['gorev','Görevlerim'],['konu','Konu takibi'],['deneme','Denemeler'],['pomo','Pomodoro']],items=(S.role=='koc'?k:S.role=='ogr'?(S.stu?(cur()&&cur().track=='LGS'?o.concat([['yazili','Yazılı notları']]):o):[['grup','Grubunu seç']]):S.role=='ort'?[['ort','Panelim'],['deneme','Denemeler'],['yazili','Yazılı notları'],['pomo','Pomodoro']]:[['veli','Aylık rapor'],['deneme','Deneme analizi']].concat(CLOUD?[['mesaj','Mesajlar'+(mUnTot()?' ('+mUnTot()+')':'')]]:[]).concat(cur()&&(cur().track=='ORT'||cur().track=='LGS')?[['yazili','Yazılı notları']]:[])).concat([['mufredat','Müfredat']]).concat(S.role=='ogr'||S.role=='ort'?[]:[['bilgi','Koçluk ve paketler']]).concat([['sozlesme','Hizmet sözleşmesi'],['kvkk','KVKK ve gizlilik'],['kural','Kurallar']]);if(S.stu&&S.role!='koc'&&cur()&&!accOk(cur(),S.role))items=[['kural','Kurallar']];
 return'<div class="brand" style="display:flex;gap:8px;align-items:center"><img src="'+IMG_LOGO+'" alt="" width="44"><span>Akademik Güç</span></div><div class="note" style="margin:-12px 8px 14px">Merve Özkaya</div>'+items.map(function(i){return'<button class="'+(S.view==i[0]?'on':'')+'" onclick="go(\''+i[0]+'\')">'+i[1]+'</button>'}).join('')+'<button onclick="doLogout()" style="margin-top:12px;color:var(--gold2)">Çıkış</button>'}
 function ana(){var a=S.students,y=a.filter(function(s){return s.track=='YKS'}),l=a.filter(function(s){return s.track=='LGS'}).length,bek=sum(a.map(function(s){return s.tasks.filter(function(t){return!t.d}).length})),tah=sum(a.filter(function(s){return s.pay.paid}).map(function(s){return s.pay.amt})),bp=a.filter(function(s){return!s.pay.paid});
 return'<div class="top"><h1>Hoş geldiniz, Koç</h1><div class="noprint"><input id="q" placeholder="Öğrenci ara…" oninput="srch(this.value)" aria-label="Öğrenci ara"> <button class="btn" onclick="newStu()">Hızlı kayıt</button></div></div><div id="sr"></div>'+(S.kc.p=='Akademik2026'?'<div class="card" style="border:2px solid var(--bad);margin-bottom:14px"><b>Varsayılan şifreyi değiştirin.</b> Giriş bilgileri sayfasından yeni bir şifre belirleyin.</div>':'')+
@@ -355,7 +355,9 @@ async function cloudLoad(){
   const dy=await SB.from('diary').select('*').maybeSingle();
   if(S.students[0]){S.students[0].diary=(dy.data&&dy.data.data)||[];_h['y'+S.students[0].id]=JSON.stringify(S.students[0].diary)}
  }
+ if(CP.role=='koc'||CP.role=='veli')await loadMsgs();
  init();
+ if(CP.role=='koc'||CP.role=='veli'){mStart();syncPush()}
 }
 async function enterCloud(want){
  try{
@@ -366,6 +368,7 @@ async function enterCloud(want){
   if(CP.role=='koc'){S.role='koc';S.stu=null;S.pend=null;S.view='ana'}
   else if(CP.role=='ogr'){S.role='ogr';S.stu=null;S.pend=CP.student_id;S.sid=CP.student_id;S.view='grup'}
   else{S.role='veli';S.pend=null;S.stu=CP.student_id;S.sid=CP.student_id;S.view='veli'}
+  if((CP.role=='koc'||CP.role=='veli')&&(location.hash=='#mesaj'))S.view='mesaj';
   render();
  }catch(e){console.error(e);S.lerr='Bağlantı hatası. Lütfen tekrar deneyin.';render()}
 }
@@ -377,7 +380,9 @@ async function cloudLogin(r,u,p){
 async function cloudOut(){
  try{if(CP&&CP.role!='koc'&&S.stu)lg('Çıkış',S.stu)}catch(e){}
  try{await Promise.all(_pend);_pend=[];await cloudSave()}catch(e){}
+ try{await unsyncPush()}catch(e){}
  try{await SB.auth.signOut()}catch(e){}
+ clearInterval(_mt);_mt=null;S.msgs=[];S.ms=null;S.draft='';S.pushOn=0;document.title='Akademik Güç';
  CP=null;_h={};S.students=[];S.notifs=[];S.rand=[];S.log=[];S.acc=[];S.stu=null;S.pend=null;S.lerr='';S.role='koc';S.login=1;render();
 }
 async function cloudBoot(){
@@ -399,6 +404,91 @@ async function setKcC(){const p=document.getElementById('kp').value;if(p.length<
 function hesapC(){const A=(id,r)=>(S.acc||[]).find(x=>x.student_id==id&&x.role==r);
 const cell=(st,r)=>{const a=A(st.id,r);return a?`<td><b>${esc(a.username)}</b><br><button class='btn' onclick='rsAcc(${st.id},"${r}")'>Şifre sıfırla</button> <button class='btn' onclick='dlAcc(${st.id},"${r}")'>Sil</button></td>`:`<td><span class='tag r'>Hesap yok</span><br><button class='btn' onclick='mkAcc(${st.id},"${r}")'>Hesap oluştur</button></td>`};
 return`<div class='top'><h1>Giriş bilgileri</h1></div><div class='card' style='margin-bottom:14px'><h3>Koç şifresi</h3><div class='row' style='flex-wrap:wrap;justify-content:flex-start'><input id='kp' type='password' placeholder='Yeni şifre (en az 8 karakter)' aria-label='Yeni şifre' autocomplete='new-password'><button class='btn' onclick='setKcC()'>Şifreyi değiştir</button></div></div><div class='card scroll'><h3>Öğrenci ve veli hesapları</h3><table><tr><th>Öğrenci</th><th>Öğrenci hesabı</th><th>Veli hesabı</th></tr>${S.students.map(st=>`<tr><td>${esc(st.name)}</td>${cell(st,'ogr')}${cell(st,'veli')}</tr>`).join('')}</table><p class='note'>Şifreler güvenli biçimde saklanır, sonradan görüntülenemez; unutulursa sıfırlayıp yeni şifre verirsiniz. Her öğrenci ve veli yalnızca kendi kaydını görür.</p></div>`}
+/* ===== Mesajlaşma (koç ↔ veli) + bildirim ===== */
+var _mt=null;
+const mIn=()=>CP&&CP.role=='koc'?'veli':'koc';
+function mList(sid){return(S.msgs||[]).filter(m=>m.student_id==sid)}
+function mUn(sid){const i=mIn();return(S.msgs||[]).filter(m=>m.sender==i&&!m.read_at&&(sid==null||m.student_id==sid)).length}
+function mUnTot(){return CLOUD&&CP&&(CP.role=='koc'||CP.role=='veli')?mUn(CP.role=='veli'?CP.student_id:null):0}
+function mTitle(){const n=mUnTot();document.title=(n?'('+n+') ':'')+'Akademik Güç'}
+async function loadMsgs(){
+ if(!CP||(CP.role!='koc'&&CP.role!='veli'))return 0;
+ const r=await SB.from('messages').select('id,student_id,sender,body,at,read_at').order('at',{ascending:true}).limit(1500);
+ if(r.error)return 0;
+ const before=mUnTot(),sig=(S.msgs||[]).length+'|'+(S.msgs||[]).filter(x=>x.read_at).length;
+ S.msgs=r.data||[];mTitle();
+ return sig!=(S.msgs.length+'|'+S.msgs.filter(x=>x.read_at).length)?1:0;
+}
+function mStart(){
+ if(_mt||!CP||(CP.role!='koc'&&CP.role!='veli'))return;
+ _mt=setInterval(async()=>{
+  if(!CP||document.hidden)return;
+  const un=mUnTot(),ch=await loadMsgs();
+  if(!ch)return;
+  const el=document.activeElement;
+  if(!(el&&/INPUT|TEXTAREA|SELECT/.test(el.tagName)))render();else{const n=document.getElementById('nav');if(n)n.innerHTML=nav()}
+  if(mUnTot()>un)mToast('Yeni mesajınız var')
+ },15000);
+ document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&CP){await loadMsgs();const el=document.activeElement;if(!(el&&/INPUT|TEXTAREA|SELECT/.test(el.tagName)))render()}});
+ try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',async e=>{if(e.data&&e.data.go=='mesaj'&&CP){await loadMsgs();S.view='mesaj';render()}})}catch(x){}
+}
+function mToast(t){let b=document.getElementById('mtoast');if(!b){b=document.createElement('div');b.id='mtoast';b.style.cssText='position:fixed;right:14px;top:14px;z-index:99;background:#0b1630;color:#f5deb3;border:1px solid #bf9740;padding:10px 16px;border-radius:10px;font-size:14px;cursor:pointer';b.onclick=()=>{b.remove();go('mesaj')};document.body.appendChild(b)}b.textContent=t;clearTimeout(b._t);b._t=setTimeout(()=>b.remove(),6000)}
+async function markRead(){
+ if(!CP||S.view!='mesaj')return;
+ const i=mIn(),sid=CP.role=='veli'?CP.student_id:S.ms;
+ const ids=(S.msgs||[]).filter(m=>m.sender==i&&!m.read_at&&m.student_id==sid).map(m=>m.id);
+ if(!ids.length)return;
+ const t=new Date().toISOString();S.msgs.forEach(m=>{if(ids.indexOf(m.id)>=0)m.read_at=t});
+ const n=document.getElementById('nav');if(n)n.innerHTML=nav();mTitle();
+ fire(SB.from('messages').update({read_at:t}).in('id',ids));
+}
+async function sendMsg(){
+ const el=document.getElementById('mt');if(!el)return;const body=el.value.trim();if(!body)return;
+ const sid=CP.role=='veli'?CP.student_id:S.ms;if(!sid)return;
+ const bt=document.getElementById('msend');if(bt)bt.disabled=true;
+ try{
+  const r=await SB.from('messages').insert({student_id:sid,sender:CP.role,body:body}).select('id,student_id,sender,body,at,read_at');
+  if(r.error)throw r.error;
+  const row=(r.data&&r.data[0])||null;S.draft='';
+  await loadMsgs();render();
+  const id=row?row.id:Math.max.apply(null,S.msgs.filter(m=>m.sender==CP.role&&m.student_id==sid).map(m=>m.id));
+  fire(SB.functions.invoke('push-notify',{body:{id:id}}));
+ }catch(e){alert('Mesaj gönderilemedi: '+(e.message||e));if(bt)bt.disabled=false}
+}
+function mFmt(t){const d=new Date(t),n=new Date(),p=x=>String(x).padStart(2,'0'),h=p(d.getHours())+':'+p(d.getMinutes());return d.toDateString()==n.toDateString()?h:p(d.getDate())+'.'+p(d.getMonth()+1)+' '+h}
+function u8(b){const p='='.repeat((4-b.length%4)%4),s=(b+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
+const pushOk=()=>('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window)&&!!window.VAPID_KEY;
+async function syncPush(){
+ try{if(!pushOk()||Notification.permission!='granted'||!CP||(CP.role!='koc'&&CP.role!='veli'))return;
+  const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(window.VAPID_KEY)});
+  const j=sub.toJSON();await SB.rpc('register_push',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});S.pushOn=1;
+ }catch(e){}
+}
+async function unsyncPush(){try{if(!pushOk())return;const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub)await SB.rpc('unregister_push',{p_endpoint:sub.endpoint})}catch(e){}}
+async function enablePush(){
+ try{
+  if(!pushOk()){alert('Bu cihaz/tarayıcı bildirimi desteklemiyor. iPhone\'da önce Safari\'den "Ana Ekrana Ekle" yapıp uygulamayı oradan açın.');return}
+  const p=await Notification.requestPermission();
+  if(p!='granted'){alert('Bildirim izni verilmedi. Tarayıcı ayarlarından bu site için bildirime izin verip tekrar deneyin.');return}
+  await syncPush();if(!S.pushOn)throw new Error('abonelik kaydedilemedi');
+  render();
+ }catch(e){alert('Bildirim açılamadı: '+(e.message||e))}
+}
+function pushBox(){
+ const on=pushOk()&&Notification.permission=='granted'&&S.pushOn;
+ return`<div class='card' style='margin-bottom:14px'><div class='row' style='flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center'><div>${on?"<b>Telefon bildirimleri açık</b><div class='note'>Yeni mesaj gelince bu cihaza bildirim düşer.</div>":"<b>Yeni mesajlarda bildirim alın</b><div class='note'>"+(pushOk()?'Uygulama kapalıyken de telefona bildirim gelir.':'iPhone\'da önce Safari\'de "Paylaş → Ana Ekrana Ekle" yapıp uygulamayı oradan açın.')+"</div>"}</div>${on?'':"<button class='btn' onclick='enablePush()'>Bildirimleri aç</button>"}</div></div>`}
+function msgView(){
+ const k=CP.role=='koc';
+ if(k&&!S.ms){const f=S.students.find(s=>mUn(s.id))||S.students[0];S.ms=f?f.id:null}
+ const sid=k?S.ms:CP.student_id,L=mList(sid),st=S.students.find(s=>s.id==sid);
+ const th=L.length?L.map(m=>{const me=m.sender==CP.role;return`<div style='display:flex;justify-content:${me?'flex-end':'flex-start'};margin:6px 0'><div style='max-width:80%;padding:8px 12px;border-radius:12px;${me?'background:#0b1630;color:#f5deb3':'background:#fff;border:1px solid var(--gold)'}'><div style='white-space:pre-wrap;word-break:break-word'>${esc(m.body)}</div><div style='font-size:11px;opacity:.7;margin-top:3px;text-align:right'>${mFmt(m.at)}${me&&m.read_at?' · okundu':''}</div></div></div>`}).join(''):`<p class='note'>Henüz mesaj yok.</p>`;
+ const box=`<div class='card'>${k?`<h3>${st?esc(st.name)+' – veli yazışması':'Öğrenci seçin'}</h3>`:`<h3>Koçunuzla mesajlaşma</h3>`}<div id='mth' style='max-height:50vh;overflow:auto;padding:4px 2px'>${th}</div>${sid?`<div style='display:flex;gap:8px;margin-top:10px;align-items:flex-end'><textarea id='mt' rows='2' maxlength='2000' placeholder='Mesajınızı yazın' oninput='S.draft=this.value' style='flex:1'>${esc(S.draft||'')}</textarea><button id='msend' class='btn' onclick='sendMsg()'>Gönder</button></div>`:''}</div>`;
+ let h=`<div class='top'><h1>Mesajlar</h1></div>${pushBox()}`;
+ if(k){h+=S.students.length?`<div class='mg'><div class='card' style='padding:8px'>${S.students.map(s=>{const n=mUn(s.id),l=mList(s.id),la=l[l.length-1];return`<button class='${s.id==sid?'on':''}' style='display:block;width:100%;text-align:left;background:${s.id==sid?'var(--sand,#f3e7c9)':'transparent'};border:0;padding:8px;border-radius:8px;cursor:pointer;font:inherit' onclick='S.ms=${s.id};S.draft="";render()'><b>${esc(s.name)}</b>${n?` <span class='tag r'>${n}</span>`:''}<div class='note' style='margin:0'>${la?mFmt(la.at):'—'}</div></button>`}).join('')}</div>${box}</div>`:`<div class='card'><p>Henüz öğrenci yok.</p></div>`}else h+=box;
+ setTimeout(()=>{const t=document.getElementById('mth');if(t)t.scrollTop=t.scrollHeight;markRead()},50);
+ return h;
+}
 function setPk(i){var s=cur();s.paket=i;s.pay.amt=PK[i][1];save();render()}
 function sozlesme(){var s=cur(),k=S.role=='koc',h='<div class="top"><h1>Hizmet sözleşmesi</h1><div class="noprint">'+(k?'<select onchange="S.sid=+this.value;render()" aria-label="Öğrenci seç">'+S.students.map(function(x){return'<option value="'+x.id+'"'+(x.id==S.sid?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')+'</select> ':'')+'<button class="btn" onclick="print()">Yazdır / PDF</button></div></div><div class="card"><h2 style="text-align:center;margin-bottom:4px">MERVE ÖZKAYA</h2><h3 style="text-align:center">ÖĞRENCİ KOÇLUĞU VE EĞİTİM DANIŞMANLIĞI HİZMET SÖZLEŞMESİ</h3><p class="note" style="text-align:center">Öğrenci: '+esc(s.name)+'</p>'+sozForm(s,k);
 CT.forEach(function(r){if(r=='~~')h+='<p class="note">Danışman Parafı: ____________ Veli Parafı: ____________</p><p class="note">Danışman İmza: ____________ Veli İmza: ____________ Öğrenci İmza: ____________</p>';else if(r=='~')h+='<p class="note">Danışman Parafı: ____________ Veli Parafı: ____________</p>';else if(r[0]=='#')h+='<h3 style="margin-top:18px">'+r.slice(1)+'</h3>';else{var a=r.split('|');h+='<p><b>MADDE '+a[0]+' - '+a[1]+'</b><br>'+(a[0]=='16'?PK.map(function(p,i){return'<label class="chk" style="margin:6px 0"><input type="radio" name="pk" '+(s.paket===i?'checked':'')+(k?' onclick="setPk('+i+')"':' disabled')+'><span>'+p[0]+': '+p[1].toLocaleString('tr')+' TL/Ay</span></label>'}).join(''):'')+a[2]+'</p>'}});
@@ -415,8 +505,8 @@ else if(r=='ogr'){const st=S.students.find(x=>(x.user||'').toLowerCase()==u&&x.p
 else{const st=S.students.find(x=>(x.vuser||'').toLowerCase()==u&&x.vpass==p&&p);if(st){ok=1;S.login=0;S.role='veli';S.pend=null;S.stu=st.id;S.sid=st.id;S.view='veli'}}
 if(!ok)S.lerr='Kullanıcı adı veya şifre hatalı.';render()}
 function doLogout(){if(CLOUD){cloudOut();return}if(S.stu&&(S.role=='ogr'||S.role=='ort'))lg('Çıkış',S.stu);S.stu=null;S.pend=null;S.lerr='';S.role='koc';S.login=1;render()}
-function render(){if(S.login){document.querySelector('.app').className='app front';document.getElementById('nav').innerHTML='';document.getElementById('main').innerHTML=front();return}document.querySelector('.app').className='app';document.getElementById('nav').innerHTML=nav();if(S.role!='koc'&&S.stu)S.sid=S.stu;if(S.role=='ogr'&&!S.stu)S.view='grup';const AL={ogr:['grup','kural','gorev','konu','deneme','pomo','yazili','mufredat','sozlesme','kvkk'],ort:['ort','kural','deneme','yazili','pomo','mufredat','sozlesme','kvkk'],veli:['veli','kural','deneme','yazili','mufredat','bilgi','sozlesme','kvkk']};if(AL[S.role]&&AL[S.role].indexOf(S.view)<0)S.view=AL[S.role][0];if(S.stu&&AL[S.role]&&cur()&&!accOk(cur(),S.role))S.view='kural';var v=S.view,s=cur(),h;
-if(v=='ana')h=ana();else if(v=='ogrenciler')h=ogrenciler();else if(v=='yks')h=yks();else if(v=='rapor')h=rapor();else if(v=='bil')h=bil();else if(v=='kvkk')h=kvkk();else if(v=='deneme')h=deneme();else if(v=='devam'&&S.role=='koc')h=devam();else if(v=='randevu'&&S.role=='koc')h=randevu();else if(v=='mufredat')h=mufredat();else if(v=='bilgi')h=bilgi();else if(v=='pomo')h=pomo();else if(v=='lgs'&&S.role=='koc')h=lgs();else if(v=='ort')h=ort();else if(v=='yazili')h=yazili();else if(v=='grup')h=grup();else if(v=='hesap'&&S.role=='koc')h=CLOUD?hesapC():hesap();else if(v=='kural')h=kural();else if(v=='sozlesme')h=sozlesme();
+function render(){if(S.login){document.querySelector('.app').className='app front';document.getElementById('nav').innerHTML='';document.getElementById('main').innerHTML=front();return}document.querySelector('.app').className='app';document.getElementById('nav').innerHTML=nav();if(S.role!='koc'&&S.stu)S.sid=S.stu;if(S.role=='ogr'&&!S.stu)S.view='grup';const AL={ogr:['grup','kural','gorev','konu','deneme','pomo','yazili','mufredat','sozlesme','kvkk'],ort:['ort','kural','deneme','yazili','pomo','mufredat','sozlesme','kvkk'],veli:['veli','mesaj','kural','deneme','yazili','mufredat','bilgi','sozlesme','kvkk']};if(AL[S.role]&&AL[S.role].indexOf(S.view)<0)S.view=AL[S.role][0];if(S.stu&&AL[S.role]&&cur()&&!accOk(cur(),S.role))S.view='kural';var v=S.view,s=cur(),h;
+if(v=='ana')h=ana();else if(v=='ogrenciler')h=ogrenciler();else if(v=='yks')h=yks();else if(v=='rapor')h=rapor();else if(v=='bil')h=bil();else if(v=='kvkk')h=kvkk();else if(v=='deneme')h=deneme();else if(v=='devam'&&S.role=='koc')h=devam();else if(v=='randevu'&&S.role=='koc')h=randevu();else if(v=='mufredat')h=mufredat();else if(v=='bilgi')h=bilgi();else if(v=='pomo')h=pomo();else if(v=='lgs'&&S.role=='koc')h=lgs();else if(v=='ort')h=ort();else if(v=='yazili')h=yazili();else if(v=='grup')h=grup();else if(v=='hesap'&&S.role=='koc')h=CLOUD?hesapC():hesap();else if(v=='mesaj'&&CLOUD&&(S.role=='koc'||S.role=='veli'))h=msgView();else if(v=='kural')h=kural();else if(v=='sozlesme')h=sozlesme();
 else if(v=='gorev')h='<div class="top"><h1>Merhaba '+esc(s.name.split(' ')[0])+'</h1></div>'+tasksCard(s,0)+'<p class="note">Görevi işaretlediğinizde koçunuza bildirim gider.</p>';
 else if(v=='konu')h='<div class="top"><h1>Konu takibi</h1></div>'+topicsCard(s);
 else if(v=='den')h='<div class="top"><h1>Denemeler</h1></div>'+denCard(s)+'<div class="card" style="margin-top:14px"><h3>Yeni deneme sonucu</h3><div class="row"><input id="dt" type="number" placeholder="TYT net"><input id="da" type="number" placeholder="AYT net"><button class="btn" onclick="addDeneme()">Kaydet</button></div></div>';
