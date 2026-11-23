@@ -396,7 +396,7 @@ async function enterCloud(want){
   if(CP.role=='koc'){S.role='koc';S.stu=null;S.pend=null;S.view='ana'}
   else if(CP.role=='ogr'){S.role='ogr';S.stu=null;S.pend=CP.student_id;S.sid=CP.student_id;S.view='grup'}
   else{S.role='veli';S.pend=null;S.stu=CP.student_id;S.sid=CP.student_id;S.view='veli'}
-  if((CP.role=='koc'||CP.role=='veli')&&(location.hash=='#mesaj'))S.view='mesaj';
+  if((CP.role=='koc'||CP.role=='veli')&&(location.hash=='#mesaj'))S.view='mesaj';if(CP.role=='veli'&&location.hash=='#gunluk'){S.view='ilkv';S.ivk=null}
   render();
  }catch(e){console.error(e);S.lerr='Bağlantı hatası. Lütfen tekrar deneyin.';render()}
 }
@@ -458,7 +458,7 @@ function mStart(){
   if(mUnTot()>un)mToast('Yeni mesajınız var')
  },15000);
  document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&CP){await loadMsgs();const el=document.activeElement;if(!(el&&/INPUT|TEXTAREA|SELECT/.test(el.tagName)))render()}});
- try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',async e=>{if(e.data&&e.data.go=='mesaj'&&CP){await loadMsgs();S.view='mesaj';render()}})}catch(x){}
+ try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',async e=>{if(e.data&&e.data.go=='mesaj'&&CP){await loadMsgs();S.view='mesaj';render()}if(e.data&&e.data.go=='gunluk'&&CP&&CP.role=='veli'){S.view='ilkv';S.ivk=null;render()}})}catch(x){}
 }
 function mToast(t){let b=document.getElementById('mtoast');if(!b){b=document.createElement('div');b.id='mtoast';b.style.cssText='position:fixed;right:14px;top:14px;z-index:99;background:#0b1630;color:#f5deb3;border:1px solid #bf9740;padding:10px 16px;border-radius:10px;font-size:14px;cursor:pointer';b.onclick=()=>{b.remove();go('mesaj')};document.body.appendChild(b)}b.textContent=t;clearTimeout(b._t);b._t=setTimeout(()=>b.remove(),6000)}
 async function markRead(){
@@ -603,6 +603,7 @@ function ilkv(){const s=cur();if(!s)return'';ilkOf(s);const k=S.ivk||dk(),t=dk()
  const days=Array.from({length:7},(_,i)=>dkAgo(i));
  return`<div class='top'><h1>${esc(s.name.split(' ')[0])} · Günlük takip</h1></div>
  ${done?`<div class='card' style='margin-bottom:14px;border-left:5px solid #2e8b57'>✅ Bugünün günlüğünü yazdınız. Teşekkürler!</div>`:`<div class='card' style='margin-bottom:14px;border-left:5px solid ${h>=18?'#c0392b':'#c9a24a'}'>${h>=18?'⏰ ':''}Bugünün günlüğünü henüz yazmadınız. Her gün birkaç cümle yeterli 🌟</div>`}
+ ${CLOUD&&!(pushOk()&&Notification.permission=='granted'&&S.pushOn)?`<div class='card noprint' style='margin-bottom:14px'><div class='row' style='flex-wrap:wrap;gap:10px'><span><b>🔔 Akşam hatırlatmasını açın</b><br><span class='note'>Günlüğü yazmadığınız günlerde saat 22:30'da telefonunuza hatırlatma gelir.</span></span><button class='btn' style='width:auto' onclick='enablePush()'>Bildirimleri aç</button></div></div>`:''}
  ${c.o?`<div class='card' style='margin-bottom:14px;background:#fff8e6'><h3>💡 Koçunuzdan bu haftanın önerisi</h3><p>${esc(c.o).replace(/\n/g,'<br>')}</p></div>`:''}
  <div class='row noprint' style='justify-content:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:10px'>${days.map(x=>`<button class='btn ${x==k?'':'ghost'}' style='width:auto;padding:6px 10px' onclick='S.ivk="${x}";S.ivd=null;S.ivDirty=0;render()'>${x==t?'Bugün':dTr(x).split(' ').slice(0,2).join(' ')}${(s.vgun||{})[x]?' ✔':''}</button>`).join('')}</div>
  ${ilkVFormDraft(s,k)}
